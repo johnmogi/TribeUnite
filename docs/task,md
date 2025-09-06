@@ -1,0 +1,546 @@
+awesome — we’ll go **super simple (Phase A)**: no custom backend, just a clean Next.js (App Router) SPA that can ship today.
+Email subs go to your newsletter provider (Mailchimp embed action), gallery pulls from a static JSON, and `/play` is a placeholder for the browser build.
+
+Below is a **copy-paste blueprint** you can scaffold in minutes.
+
+---
+
+# File tree
+
+```
+tribes-unite/
+  package.json
+  postcss.config.js
+  tailwind.config.js
+  tsconfig.json
+  next.config.js
+  public/
+    favicon.svg
+    media.json
+  src/
+    app/
+      globals.css
+      layout.tsx
+      page.tsx               # Landing
+      subscribe/page.tsx
+      gallery/page.tsx
+      donate/page.tsx
+      about/page.tsx
+      play/page.tsx
+      privacy/page.tsx
+      terms/page.tsx
+    components/
+      Header.tsx
+      Footer.tsx
+      CtaStrip.tsx
+      MediaGrid.tsx
+```
+
+---
+
+# package.json
+
+```json
+{
+  "name": "tribes-unite",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.4.5"
+  }
+}
+```
+
+---
+
+# tailwind.config.js
+
+```js
+module.exports = {
+  content: ["./src/**/*.{ts,tsx}"],
+  theme: {
+    extend: { colors: { ink: "#0b1220" } }
+  },
+  plugins: []
+};
+```
+
+# postcss.config.js
+
+```js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
+};
+```
+
+# next.config.js
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: { remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }] }
+};
+module.exports = nextConfig;
+```
+
+---
+
+# public/favicon.svg
+
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#a855f7"/>
+  </linearGradient></defs>
+  <circle cx="48" cy="48" r="44" fill="url(#g)"/>
+</svg>
+```
+
+# public/media.json  *(edit with your content)*
+
+```json
+[
+  {
+    "type": "image",
+    "title": "Concept — Fractured Sun",
+    "thumbUrl": "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=1200&auto=format&fit=crop",
+    "mediaUrl": "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?q=80&w=2400&auto=format&fit=crop",
+    "tags": ["concept"],
+    "createdAt": "2025-01-01"
+  },
+  {
+    "type": "image",
+    "title": "The Maze — Consciousness Layer",
+    "thumbUrl": "https://images.unsplash.com/photo-1520975922284-9f53e84ea2a2?q=80&w=1200&auto=format&fit=crop",
+    "mediaUrl": "https://images.unsplash.com/photo-1520975922284-9f53e84ea2a2?q=80&w=2400&auto=format&fit=crop",
+    "tags": ["maze"]
+  },
+  {
+    "type": "video",
+    "title": "Gameplay Demo",
+    "thumbUrl": "https://images.unsplash.com/photo-1495567720989-cebdbdd97913?q=80&w=1200&auto=format&fit=crop",
+    "mediaUrl": "https://www.youtube.com/embed/VIDEO_ID",
+    "tags": ["demo"]
+  }
+]
+```
+
+---
+
+# src/app/globals.css
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px solid #fb923c; outline-offset: 2px; }
+body { background: #0b1220; }
+```
+
+# src/app/layout.tsx
+
+```tsx
+import "./globals.css";
+import type { Metadata } from "next";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+export const metadata: Metadata = {
+  title: "TRIBES UNITE — Wake Up",
+  description: "A browser-first roguelike deckbuilder. Unite the tribes. Walk the maze. Wake up.",
+  icons: { icon: "/favicon.svg" }
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body className="text-slate-100">
+        <Header/>
+        <main className="min-h-[70vh]">{children}</main>
+        <Footer/>
+      </body>
+    </html>
+  );
+}
+```
+
+# src/components/Header.tsx
+
+```tsx
+export default function Header() {
+  return (
+    <header className="sticky top-0 z-50 backdrop-blur bg-slate-950/80 border-b border-slate-800">
+      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+        <a href="/" className="flex items-center gap-3">
+          <img src="/favicon.svg" alt="logo" className="h-9 w-9 rounded-full"/>
+          <span className="text-lg tracking-wide font-semibold">
+            TRIBES <span className="text-orange-400">UNITE</span>
+          </span>
+        </a>
+        <nav className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+          <a href="/subscribe" className="hover:text-white">Subscribe</a>
+          <a href="/gallery" className="hover:text-white">Gallery</a>
+          <a href="/donate" className="hover:text-white">Donate</a>
+          <a href="/about" className="hover:text-white">About</a>
+          <a href="/play" className="hover:text-white">Play</a>
+        </nav>
+        <a href="/subscribe" className="md:hidden inline-flex items-center justify-center rounded-xl bg-orange-500 px-3 py-2 text-sm font-semibold hover:bg-orange-400">Join</a>
+      </div>
+    </header>
+  );
+}
+```
+
+# src/components/Footer.tsx
+
+```tsx
+export default function Footer() {
+  return (
+    <footer className="border-t border-slate-800 bg-slate-950/70 mt-16">
+      <div className="mx-auto max-w-6xl px-4 py-8 grid md:grid-cols-3 gap-6 text-sm text-slate-400">
+        <div>
+          <div className="font-semibold text-slate-200">TRIBES <span className="text-orange-400">UNITE</span></div>
+          <p className="mt-2">© {new Date().getFullYear()} — All rights reserved.</p>
+        </div>
+        <div className="space-y-1">
+          <a href="/subscribe" className="block hover:text-white">Subscribe</a>
+          <a href="/gallery" className="block hover:text-white">Gallery</a>
+          <a href="/donate" className="block hover:text-white">Donate</a>
+          <a href="/privacy" className="block hover:text-white">Privacy</a>
+          <a href="/terms" className="block hover:text-white">Terms</a>
+        </div>
+        <div className="space-y-2">
+          <p>Contact: <a className="underline hover:text-white" href="mailto:hello@tribesunite.game">hello@tribesunite.game</a></p>
+          <p className="text-xs">Browser SPA. Game will mount at <code>/play</code>.</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+```
+
+# src/components/CtaStrip.tsx
+
+```tsx
+export default function CtaStrip() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-10">
+      <div className="rounded-3xl border border-slate-800 bg-slate-900/50 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
+        <div className="text-xl font-semibold">Unite the tribes. Walk the maze. Wake up.</div>
+        <a href="/subscribe" className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-5 py-3 font-semibold hover:bg-orange-400">Join the Circle</a>
+      </div>
+    </section>
+  );
+}
+```
+
+# src/components/MediaGrid.tsx
+
+```tsx
+"use client";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+
+type Media = {
+  type: "image" | "video";
+  title: string;
+  thumbUrl: string;
+  mediaUrl: string;
+  tags?: string[];
+};
+
+export default function MediaGrid() {
+  const [items, setItems] = useState<Media[]>([]);
+  const [filter, setFilter] = useState<"all"|"image"|"video">("all");
+
+  useEffect(() => {
+    fetch("/media.json").then(r => r.json()).then(setItems);
+  }, []);
+
+  const filtered = items.filter(i => filter==="all" ? true : i.type===filter);
+
+  return (
+    <>
+      <div className="flex gap-2">
+        {["all","image","video"].map(f => (
+          <button key={f} onClick={()=>setFilter(f as any)}
+            className={`rounded-xl px-3 py-2 border text-sm ${filter===f ? "bg-slate-800 border-slate-700" : "bg-slate-900/60 border-slate-800 hover:bg-slate-800"}`}>
+            {f[0].toUpperCase()+f.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map((m, idx) => (
+          <div key={idx} className="group relative overflow-hidden rounded-2xl ring-1 ring-slate-800">
+            {m.type==="image" ? (
+              <Image src={m.thumbUrl} alt={m.title} width={1200} height={700}
+                     className="h-56 w-full object-cover transition group-hover:scale-[1.03]"/>
+            ) : (
+              <div className="aspect-video">
+                <iframe className="w-full h-full" src={m.mediaUrl} title={m.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent"/>
+            <div className="absolute bottom-3 left-3 text-sm">{m.title}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+```
+
+---
+
+# src/app/page.tsx (Landing)
+
+```tsx
+import CtaStrip from "@/components/CtaStrip";
+
+export default function Page() {
+  return (
+    <>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 opacity-40 bg-[radial-gradient(ellipse_at_top_right,rgba(251,146,60,.35),transparent_40%),radial-gradient(ellipse_at_bottom_left,rgba(168,85,247,.3),transparent_40%)]"/>
+        <div className="mx-auto max-w-6xl px-4 py-20 grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl leading-tight font-extrabold">
+              This is not just a game. <span className="text-orange-400">It is a tool.</span>
+            </h1>
+            <p className="mt-4 text-slate-300">A roguelike deckbuilder forged as a mirror of the human mind. Unite the tribes. Walk the maze. Wake up.</p>
+            <a href="/subscribe" className="mt-8 inline-flex items-center justify-center rounded-2xl bg-orange-500 px-6 py-3 font-semibold hover:bg-orange-400 transition">Subscribe for early access</a>
+            <div className="mt-3 text-xs text-slate-400">No spam. Milestones, drops, and playtest invites.</div>
+          </div>
+          <div className="aspect-video rounded-2xl overflow-hidden ring-1 ring-slate-800 shadow-xl">
+            {/* replace PLAYLIST_ID */}
+            <iframe className="w-full h-full" src="https://www.youtube.com/embed/videoseries?list=PL_PLAYLIST_ID"
+              title="TRIBES UNITE — YouTube Album" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen/>
+          </div>
+        </div>
+      </section>
+      <CtaStrip/>
+    </>
+  );
+}
+```
+
+# src/app/subscribe/page.tsx
+
+```tsx
+"use client";
+
+import { useState } from "react";
+
+export default function SubscribePage() {
+  const [msg, setMsg] = useState<string | null>(null);
+
+  // Option A: Mailchimp embedded form action (public). Replace ACTION_URL + hidden fields.
+  // Option B: later, POST to /api/subscribe (server) instead.
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // If you paste a Mailchimp/ConvertKit action URL, remove preventDefault.
+    e.preventDefault();
+    const email = (new FormData(e.currentTarget).get("email") || "").toString();
+    setMsg(`Thanks, ${email}! You're on the list. (Wire to your provider later)`);
+    e.currentTarget.reset();
+  }
+
+  return (
+    <section className="mx-auto max-w-3xl px-4 py-14">
+      <div className="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
+        <h2 className="text-2xl font-bold">Join the Circle</h2>
+        <p className="mt-1 text-sm text-slate-400">Get updates & be first when the browser build unlocks.</p>
+        <form className="mt-6 grid gap-3 md:grid-cols-[1fr_auto]" onSubmit={onSubmit}
+              action="MAILCHIMP_EMBED_ACTION_URL" method="POST" target="_blank" noValidate>
+          <input required type="email" name="EMAIL" placeholder="you@domain.com"
+            className="w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"/>
+          <button className="rounded-xl bg-orange-500 px-5 py-3 font-semibold hover:bg-orange-400 transition">Subscribe</button>
+          {/* Mailchimp hidden fields go here when you paste their embed */}
+        </form>
+        {msg && <div className="mt-3 text-sm text-emerald-400">{msg}</div>}
+        <div className="mt-3 text-xs text-slate-500">We only use your email for project updates. Unsubscribe anytime.</div>
+      </div>
+    </section>
+  );
+}
+```
+
+# src/app/gallery/page.tsx
+
+```tsx
+import MediaGrid from "@/components/MediaGrid";
+
+export default function GalleryPage() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-14">
+      <div className="flex items-end justify-between">
+        <h2 className="text-2xl font-bold">Gallery</h2>
+        <div className="text-sm text-slate-400">Images & Videos</div>
+      </div>
+      <div className="mt-6">
+        <MediaGrid/>
+      </div>
+    </section>
+  );
+}
+```
+
+# src/app/donate/page.tsx
+
+```tsx
+export default function DonatePage() {
+  return (
+    <section className="mx-auto max-w-3xl px-4 py-14">
+      <div className="rounded-3xl border border-slate-800 bg-slate-900/40 p-6">
+        <h2 className="text-2xl font-bold">Support the Vision</h2>
+        <p className="mt-1 text-sm text-slate-400">If this resonates, help ship the browser build and soundtrack.</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          {/* replace links */}
+          <a href="https://patreon.com/" target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 hover:bg-slate-800"><span>💖</span> Patreon</a>
+          <a href="https://paypal.me/" target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 hover:bg-slate-800"><span>💸</span> PayPal</a>
+          <a href="#" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 hover:bg-slate-800"><span>🪙</span> Crypto</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+```
+
+# src/app/about/page.tsx
+
+```tsx
+"use client";
+import { useState } from "react";
+
+export default function AboutPage() {
+  const [tab, setTab] = useState<"vision"|"tech"|"roadmap">("vision");
+  return (
+    <section className="mx-auto max-w-4xl px-4 py-14">
+      <h2 className="text-2xl font-bold">About the Project</h2>
+      <div className="mt-6 flex gap-2">
+        {["vision","tech","roadmap"].map(t => (
+          <button key={t} onClick={()=>setTab(t as any)}
+            className={`rounded-xl px-3 py-2 border text-sm ${tab===t ? "bg-slate-800 border-slate-700" : "bg-slate-900/60 border-slate-800 hover:bg-slate-800"}`}>
+            {t[0].toUpperCase()+t.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {tab==="vision" && (
+        <section className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+          <p className="text-slate-300">Unite the four tribes, cross the maze of mind, and awaken. A browser-first deckbuilder that treats play as a path.</p>
+        </section>
+      )}
+
+      {tab==="tech" && (
+        <section className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+          <ul className="list-disc pl-5 text-slate-300 space-y-2">
+            <li>App Router (Next.js), Tailwind, no custom backend (Phase A).</li>
+            <li>YouTube playlist on landing; game mounts at <code>/play</code> later.</li>
+            <li>Newsletter via Mailchimp embed or provider of choice.</li>
+            <li>Gallery loads from <code>/media.json</code>.</li>
+          </ul>
+        </section>
+      )}
+
+      {tab==="roadmap" && (
+        <section className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+          <ol className="list-decimal pl-5 text-slate-300 space-y-2">
+            <li>Ship shell with playlist + subscribe.</li>
+            <li>Fill gallery from <code>public/media.json</code>.</li>
+            <li>Hook donate buttons.</li>
+            <li>Add <code>/play</code> canvas.</li>
+            <li>(Phase B) Add Mongo + <code>/api/subscribe</code>.</li>
+          </ol>
+        </section>
+      )}
+    </section>
+  );
+}
+```
+
+# src/app/play/page.tsx
+
+```tsx
+export default function PlayPage() {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-14">
+      <h2 className="text-2xl font-bold">Play (Browser Build Placeholder)</h2>
+      <p className="mt-2 text-slate-400">When the prototype is ready, mount your canvas here.</p>
+      <div className="mt-6 h-72 rounded-2xl border border-dashed border-slate-700 grid place-items-center text-slate-500">
+        <span>Canvas / WebGL mounts here</span>
+      </div>
+    </section>
+  );
+}
+```
+
+# src/app/privacy/page.tsx
+
+```tsx
+export default function PrivacyPage() {
+  return (
+    <section className="mx-auto max-w-4xl px-4 py-14">
+      <h2 className="text-2xl font-bold">Privacy Policy (Draft)</h2>
+      <p className="mt-3 text-slate-300">
+        We collect email addresses submitted via the subscribe form to send project updates only.
+        We don’t sell your data. You can unsubscribe anytime using the link in our emails.
+      </p>
+    </section>
+  );
+}
+```
+
+# src/app/terms/page.tsx
+
+```tsx
+export default function TermsPage() {
+  return (
+    <section className="mx-auto max-w-4xl px-4 py-14">
+      <h2 className="text-2xl font-bold">Terms of Use (Draft)</h2>
+      <p className="mt-3 text-slate-300">
+        By using this site, you agree to lawful use and acknowledge that content may change during development.
+        All trademarks and artworks are property of their respective owners.
+      </p>
+    </section>
+  );
+}
+```
+
+---
+
+## How to run
+
+```bash
+npx create-next-app@latest tribes-unite --ts --eslint --tailwind --app
+# replace generated files with the ones above (or merge)
+npm run dev
+```
+
+**Next steps you must do:**
+
+* Replace `PL_PLAYLIST_ID` on the landing with your YouTube playlist id.
+* Replace the demo `VIDEO_ID` in `public/media.json`.
+* Paste your **Mailchimp (or provider) embed form action** into `/subscribe` and include any hidden fields they require.
+* Fill `public/media.json` with real thumbs/links (Cloudinary or your CDN).
+* Point Donate buttons to real URLs.
+
+If you want to move to **Phase B** later, I’ll give you the minimal Mongo models + `/api/subscribe` & `/api/media` route handlers to swap in without touching the UI.

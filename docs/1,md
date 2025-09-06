@@ -1,0 +1,76 @@
+Project: TRIBES UNITE (Web Platform + Game)
+The Vision
+
+At its heart this is a browser-based game (roguelike deckbuilder with tarot/tribal themes).
+
+Around the game we need a web shell — a single-page app (SPA) — that lets us:
+
+Present the project (landing page, gallery, about).
+
+Collect subscribers (emails for early access & updates).
+
+Accept donations (Patreon, PayPal, Stripe later).
+
+Eventually host the game directly inside the browser under /play.
+
+So: the site starts as a marketing + community hub, and later becomes the distribution platform for the game itself.
+
+The Type of Backend We’re Building
+
+We are building a lightweight backend inside Next.js (no separate server).
+
+Framework: Next.js App Router
+
+Serves frontend pages (landing, gallery, etc.).
+
+Handles backend routes under /api/*.
+
+Database: MongoDB (Atlas or local).
+
+Stores subscriber emails, gallery media entries, donations.
+
+Architecture:
+
+Serverless API routes — each endpoint is a small function that connects to MongoDB.
+
+This is enough for MVP (subscribe form, gallery fetch).
+
+Later we can extend it for donations & authentication.
+
+Think of the backend as “a small content + subscriber service”:
+
+It doesn’t do heavy business logic.
+
+It doesn’t render the game logic itself (the game runs in frontend WebGL/Phaser).
+
+It just manages data (subscribers, media, donations).
+
+Core Backend Features (MVP)
+
+/api/subscribe → POST { email } → saves to DB.
+
+/api/media → GET list of gallery items (images/videos).
+
+(Later) /api/donate → integrate Stripe/PayPal webhooks.
+
+That’s it. Clean, small, and scalable.
+
+Why This Design?
+
+Next.js = single codebase for both frontend and backend.
+
+MongoDB = flexible schema (perfect for early stage, can evolve easily).
+
+Serverless API routes = no extra backend service needed, works on Vercel/DO out of the box.
+
+This makes it realistic for a solo developer:
+
+You can spin it up locally.
+
+You can deploy in minutes.
+
+You don’t need to maintain a huge backend — just a few endpoints.
+
+👉 In short:
+We’re not building a big standalone backend service.
+We’re embedding a mini backend inside Next.js — enough to handle subscriptions, serve media for the gallery, and later connect donations.
