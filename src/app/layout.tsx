@@ -1,32 +1,36 @@
 import "./globals.css";
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Metadata } from 'next';
+import ClientLayout from './ClientLayout';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Import metadata
+import siteMetadata from './metadata';
+
+// Load fonts with the new approach
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+  fallback: ['system-ui', 'sans-serif'],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+  fallback: ['monospace'],
 });
 
-export const metadata: Metadata = {
-  title: "TRIBES UNITE — Wake Up",
-  description: "A browser-first roguelike deckbuilder. Unite the tribes. Walk the maze. Wake up.",
-  icons: { icon: "/favicon.svg" }
-};
+export const metadata: Metadata = siteMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased text-slate-100`}>
-        <Header/>
-        <main className="min-h-[70vh]">{children}</main>
-        <Footer/>
+    <html 
+      lang="en" 
+      className={`${inter.variable} ${jetbrainsMono.variable} font-sans`}
+    >
+      <body className="antialiased bg-slate-950 text-slate-100">
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

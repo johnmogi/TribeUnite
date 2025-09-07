@@ -1,7 +1,19 @@
 module.exports = {
-  content: ["./src/**/*.{ts,tsx}"],
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  darkMode: 'class',
   theme: {
-    extend: { colors: { ink: "#0b1220" } }
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#0ea5e9',
+          dark: '#0284c7',
+        },
+      },
+    },
   },
-  plugins: []
-};
+  plugins: [],
+}
