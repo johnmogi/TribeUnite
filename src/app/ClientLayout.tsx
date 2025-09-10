@@ -4,12 +4,12 @@ import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
 // Import client components with no SSR
-const Header = dynamic(() => import('./_components/Header'), { 
+const Header = dynamic(() => import('@/components/Header'), { 
   ssr: false,
   loading: () => <div className="h-16 bg-slate-900 w-full" />
 });
 
-const Footer = dynamic(() => import('./_components/Footer'), { 
+const Footer = dynamic(() => import('@/components/Footer'), { 
   ssr: false,
   loading: () => <div className="h-16 bg-slate-900 w-full" />
 });
