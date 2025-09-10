@@ -8,9 +8,12 @@ const nextConfig: NextConfig = {
   images: { 
     unoptimized: true,
     remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "tribesunite.vercel.app" },
-      { protocol: "https", hostname: "localhost" }
+      { protocol: 'https', hostname: 'i.ytimg.com' }, // YouTube thumbnails
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'tribesunite.vercel.app' },
+      { protocol: 'https', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'cdn.example.com' },
+      { protocol: 'https', hostname: 'i.scdn.co' } // Spotify album covers
     ]
   },
   

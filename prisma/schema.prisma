@@ -16,3 +16,26 @@ datasource db {
 //   email String  @unique
 //   name  String?
 // }
+
+model Media {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  type          String   // "video" | "music" | "image"
+  title         String
+  description   String?
+  tags          String[] @default([])
+  thumbUrl      String?
+  mediaUrl      String?
+  youtubeId     String?
+  spotifyEmbedUrl String?
+  album         String?
+  width         Int?
+  height        Int?
+  published     Boolean  @default(false)
+  priority      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([published, type, createdAt(desc: true)])
+  @@index([tags])
+  @@index([album])
+}

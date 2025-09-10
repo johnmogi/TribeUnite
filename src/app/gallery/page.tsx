@@ -1,44 +1,59 @@
-import { fetchJSON } from "@/lib/api";
+'use client';
 
-type MediaItem = {
-  _id: string; type: "image"|"video"; title: string;
-  thumbUrl: string; mediaUrl: string; tags?: string[];
-};
+import { useState } from 'react';
+import dynamic from 'next/dynamic';
 
-async function getMedia(): Promise<MediaItem[]> {
-  const base = process.env.NEXT_PUBLIC_API_BASE || "";
-  const data = await fetchJSON<{ ok: boolean; items: MediaItem[] }>(`${base}/api/media?limit=12`);
-  return data.items || [];
-}
+// Dynamically import components with no SSR to avoid hydration issues
+const VideoGrid = dynamic(() => import('./VideoGrid'), { ssr: false });
+const MusicList = dynamic(() => import('./MusicList'), { ssr: false });
+const ImageGrid = dynamic(() => import('./ImageGrid'), { ssr: false });
 
-export default async function GalleryPage() {
-  const items = await getMedia();
+type Tab = 'videos' | 'music' | 'images';
+
+export default function GalleryPage() {
+  const [activeTab, setActiveTab] = useState<Tab>('videos');
+
   return (
-    <section className="mx-auto max-w-6xl px-4 py-14">
-      <div className="flex items-end justify-between">
-        <h2 className="text-2xl font-bold">Gallery</h2>
-        <div className="text-sm text-slate-400">Images & Videos</div>
+    <main className="min-h-screen bg-gray-900 text-white py-12">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Header */}
+        <header className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-orange-400 to-pink-500 bg-clip-text text-transparent">
+            Gallery
+          </h1>
+          <p className="text-gray-300 max-w-2xl mx-auto">
+            Explore our collection of videos, music, and images from the Tribes Unite project.
+          </p>
+        </header>
+
+        {/* Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {[
+            { id: 'videos', label: 'Videos' },
+            { id: 'music', label: 'Music' },
+            { id: 'images', label: 'Images' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as Tab)}
+              className={`px-5 py-2.5 rounded-lg font-medium transition-all ${
+                activeTab === tab.id
+                  ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700/80'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="min-h-[400px]">
+          {activeTab === 'videos' && <VideoGrid />}
+          {activeTab === 'music' && <MusicList />}
+          {activeTab === 'images' && <ImageGrid />}
+        </div>
       </div>
-      <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {items.map(it => (
-          <article key={it._id} className="group relative overflow-hidden rounded-2xl ring-1 ring-slate-800">
-            {it.type === "image" ? (
-              <img src={it.thumbUrl} alt={it.title} className="h-56 w-full object-cover transition group-hover:scale-[1.03]" />
-            ) : (
-              <div className="aspect-video">
-                <iframe className="w-full h-full" src={it.mediaUrl} title={it.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen />
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
-            <div className="absolute bottom-3 left-3 text-sm">{it.title}</div>
-          </article>
-        ))}
-        {items.length === 0 && (
-          <div className="text-slate-400">No media yet. Add to the database or stub a few items.</div>
-        )}
-      </div>
-    </section>
+    </main>
   );
 }
