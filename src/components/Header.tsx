@@ -155,11 +155,18 @@ export default function Header() {
       {/* Mobile Dropdown Menu */}
       <div 
         ref={menuRef}
-        className={`absolute top-full right-0 w-72 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden z-50 transition-all duration-300 origin-top-right transform ${
-          isMenuOpen 
-            ? 'opacity-100 scale-100 translate-y-1' 
-            : 'opacity-0 scale-95 translate-y-0 pointer-events-none'
+        className={`absolute top-[calc(100%+0.25rem)] right-0 w-72 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden z-50 ${
+          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         } md:hidden`}
+        style={{
+          transform: isMenuOpen ? 'translateY(0) scale(1)' : 'translateY(-8px) scale(0.98)',
+          transformOrigin: 'top right',
+          willChange: 'opacity, transform',
+          transition: 'opacity 150ms ease-out, transform 150ms ease-out',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          WebkitFontSmoothing: 'antialiased',
+        }}
         aria-hidden={!isMenuOpen}
       >
         <nav className="p-2 space-y-1">
